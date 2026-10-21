@@ -12,6 +12,9 @@ All API routes are served under `/api` and return standardized JSON payloads:
 
 ---
 
+
+---
+
 ### Authentication (`/api/auth`)
 
 #### `POST /api/auth/login`
@@ -21,6 +24,8 @@ All API routes are served under `/api` and return standardized JSON payloads:
   { "email": "employee@exeloncircuits.com", "password": "Password@123" }
   ```
 - **Response**: Sets HTTP-only `lms_session` cookie; returns sanitized User object.
+
+![Login Screen](images/ui/ui-login.png)
 
 #### `POST /api/auth/logout`
 - **Access**: Authenticated
@@ -54,9 +59,22 @@ All API routes are served under `/api` and return standardized JSON payloads:
   ```
 - **Validation**: Checks overlap, verifies working days, checks available quota, atomically reserves `pendingDays`.
 
+![Leave Application UI](images/ui/ui-apply-leave.png)
+
 #### `PATCH /api/leaves/:id/cancel`
 - **Access**: Authenticated (Owner if pending; Admin if approved)
 - **Response**: Releases or restores balance and sets status to `cancelled`.
+
+#### `PATCH /api/leaves/:id/override`
+- **Access**: Admin only
+- **Request Body**:
+  ```json
+  {
+    "status": "approved",
+    "reason": "Executive director override"
+  }
+  ```
+- **Response**: Super admin direct status modification with balance reconciliation.
 
 ---
 
@@ -76,6 +94,8 @@ All API routes are served under `/api` and return standardized JSON payloads:
   }
   ```
 - **Guarantees**: Atomic conditional update. Prevents double-processing and self-approval.
+
+![Approvals Queue UI](images/ui/ui-manager-approvals.png)
 
 ---
 
@@ -110,10 +130,15 @@ All API routes are served under `/api` and return standardized JSON payloads:
 - **Access**: Manager or Admin
 - **Description**: Streams a sanitized CSV file with formula-injection mitigation (`=`, `+`, `-`, `@` characters sanitized).
 
+![Reports and Export UI](images/ui/ui-reports-export.png)
+
 #### `GET /api/health`
 - **Access**: Public
 - **Description**: Liveness check returning process status, uptime, and database connectivity.
 
 #### `GET /metrics`
 - **Access**: Internal Docker network only
-- **Description**: Prometheus metrics in standard exposition format.
+- **Description**: Prometheus metrics in standard exposition format scraped every 5 seconds.
+
+![Grafana Application Overview](images/grafana/grafana-app-overview.png)
+

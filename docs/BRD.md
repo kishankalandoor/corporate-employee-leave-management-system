@@ -7,6 +7,8 @@
 
 This Business Requirements Document defines the enterprise Leave Management System (LMS) developed for **Exelon Circuits Pvt. Ltd.** The system digitizes, automates, and governs the entire lifecycle of employee time-off requests, departmental manager approvals, leave balance accounting, compliance reporting, and executive observability.
 
+![Executive Administrator Dashboard](images/ui/ui-admin-dashboard.png)
+
 ### 2. Business Problem & Objectives
 
 #### Problems Addressed:
@@ -41,6 +43,8 @@ This Business Requirements Document defines the enterprise Leave Management Syst
 | Compliance Reports & CSV Export | No | Team Only | Company-wide |
 | Immutable System Audit Trail | No | No | Yes |
 
+![Employee Directory Management](images/ui/ui-employee-directory.png)
+
 ---
 
 ### 4. Detailed Leave Lifecycle & Business Rules
@@ -53,7 +57,14 @@ This Business Requirements Document defines the enterprise Leave Management Syst
 5. **Balance Check**: Available balance (`Entitlement + CarryForward + Adjustments - Used`) must be `>= requested days`.
 6. **Reservation**: Upon submission, requested days are atomically incremented in `pendingDays`. The request state becomes `pending`.
 
-#### 4.2 Approval Workflow
+![Apply for Leave Interface](images/ui/ui-apply-leave.png)
+
+#### 4.2 Corporate Holiday & Working Day Governance
+The working-day calculation engine references the unified company calendar to exclude declared national/statutory holidays, while supporting special working day overrides:
+
+![2026 Company Holiday Calendar](images/ui/ui-holiday-calendar.png)
+
+#### 4.3 Approval Workflow
 1. **Manager Notification**: The assigned reporting manager receives an in-app alert.
 2. **Review**: Manager inspects duration, overlapping team absences, and employee reason.
 3. **Decision**:
@@ -61,9 +72,12 @@ This Business Requirements Document defines the enterprise Leave Management Syst
    - **Rejection**: `status -> rejected`. Requires mandatory rejection comments. Atomically decrements `pendingDays` (restoring available balance).
 4. **Idempotency**: Processing an already finalized request returns HTTP `409 Conflict`.
 
-#### 4.3 Cancellation
+![Manager Pending Approvals Queue](images/ui/ui-manager-approvals.png)
+
+#### 4.4 Cancellation & Super Admin Override
 - **Pending Requests**: May be cancelled by the employee at any time. Releases `pendingDays`.
 - **Approved Requests**: Can only be cancelled by an Administrator. Restores consumed `usedDays` back to available quota.
+- **Admin Override**: Super Administrators have direct authority to update statuses on exceptional executive grounds.
 
 ---
 
@@ -73,4 +87,7 @@ This Business Requirements Document defines the enterprise Leave Management Syst
 - **Backend**: Node.js LTS with Express, strict TypeScript, Mongoose ODM, Argon2id hashing, express-session with MongoStore.
 - **Database**: MongoDB 7.0 persistent named volume with compound indexes.
 - **Frontend**: React 18, TypeScript, Vite, Bootstrap 5, Bootstrap Icons, TanStack Query.
-- **Observability**: Prometheus metrics scraping `/metrics`, Loki centralized logs, Grafana Alloy collector, and Grafana UI on port 3000.
+- **Observability**: Prometheus metrics scraping `/metrics`, Loki centralized logs, Grafana Alloy collector, and Grafana UI on port 3200 (`/grafana/`).
+
+![Business Operations Observability Telemetry](images/grafana/grafana-business-ops.png)
+

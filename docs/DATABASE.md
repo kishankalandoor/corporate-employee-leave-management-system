@@ -18,6 +18,7 @@ erDiagram
     LeaveType ||--o{ LeavePolicy : "configured in"
     LeaveType ||--o{ LeaveRequest : "categorizes"
     LeaveType ||--o{ LeaveBalance : "allocates"
+    Holiday ||--o{ Department : "applies to"
 ```
 
 ---
@@ -25,26 +26,26 @@ erDiagram
 ### 2. Schema Details
 
 #### `users` Collection
-- `employeeId`: String, unique, indexed (e.g. `EMP-1001`)
+- `employeeId`: String, unique, indexed (e.g. `EXL-0001`)
 - `firstName`, `lastName`: String
 - `email`: String, unique, lowercased, indexed
 - `passwordHash`: String (Argon2id)
 - `role`: Enum `['employee', 'manager', 'admin']`, indexed
 - `department`: ObjectId -> `departments`, indexed
-- `manager`: ObjectId -> `users` (self-referential)
+- `manager`: ObjectId -> `users` (self-referential hierarchy)
 - `status`: Enum `['active', 'inactive']`, indexed
 - `employmentStatus`: Enum `['full-time', 'part-time', 'contract', 'on-notice']`
 - `joiningDate`: Date
 
 #### `departments` Collection
-- `name`: String, unique
-- `code`: String, unique, uppercase (e.g. `ENG`, `QA`, `MFG`, `HR`)
+- `name`: String, unique (e.g. `Engineering`, `Human Resources`, `Sales`)
+- `code`: String, unique, uppercase (e.g. `ENG`, `HR`, `FIN`, `EXEC`)
 - `description`: String
 - `isActive`: Boolean
 
 #### `leave_types` Collection
-- `name`: String, unique (e.g. `Casual Leave`, `Sick Leave`, `Earned Leave`)
-- `code`: String, unique (e.g. `CL`, `SL`, `EL`, `LWP`)
+- `name`: String, unique (e.g. `Casual Leave`, `Sick Leave`, `Annual Leave`)
+- `code`: String, unique (e.g. `CL`, `SL`, `AL`, `UL`, `ML`, `PL`)
 - `isPaid`: Boolean
 - `requiresApproval`: Boolean
 - `allowHalfDay`: Boolean
@@ -75,8 +76,10 @@ erDiagram
 **Balance Calculation Formula**:
 $$\text{Available} = \max(0, \text{entitlement} + \text{carryForward} + \text{adjustments} - \text{usedDays})$$
 
+![Leave Balances](images/ui/ui-leave-balances.png)
+
 #### `leave_requests` Collection
-- `requestNumber`: String, unique, indexed (e.g. `LR-2026-0001`)
+- `requestNumber`: String, unique, indexed (e.g. `LR-2026-EXL-0001`)
 - `employee`: ObjectId -> `users`, indexed
 - `leaveType`: ObjectId -> `leave_types`, indexed
 - `startDate`: Date, indexed
@@ -91,25 +94,30 @@ $$\text{Available} = \max(0, \text{entitlement} + \text{carryForward} + \text{ad
 - `approverComments`: String
 - `submittedAt`: Date, indexed
 
+#### `holidays` Collection
+- `name`: String (e.g. `Republic Day`, `Makara Sankranti`)
+- `date`: Date, indexed
+- `year`: Number, indexed (e.g. `2026`)
+- `type`: Enum `['official', 'optional', 'half-day-afternoon', 'half-day-morning', 'special-working-day']`
+- `scope`: Enum `['company-wide', 'department']`
+- `applicableDepartments`: Array of ObjectId -> `departments`
+- `description`: String
+- `declaredBy`: ObjectId -> `users`
+
+![Holiday Calendar](images/ui/ui-holiday-calendar.png)
+
 #### `audit_logs` Collection
 - `actor`: ObjectId -> `users`
 - `actorEmail`: String
-- `action`: String, indexed (e.g. `auth.login`, `leave.approved`, `user.created`)
+- `action`: String, indexed (e.g. `auth.login`, `leave.approved`, `leave.override_status`)
 - `entityType`: String, indexed
 - `entityId`: String
 - `description`: String
-- `metadata`: Mixed
+- `metadata`: Object
 - `ipAddress`: String
-- `createdAt`: Date, indexed
+- `userAgent`: String
+- `timestamp`: Date, indexed (default `Date.now`)
 
 ---
 
-### 3. Data Integrity & Concurrency Guarantees
-
-1. **Idempotency in Approvals**:
-   `LeaveRequest.findOneAndUpdate({ _id: id, status: 'pending' }, ...)`
-   Guarantees that a pending request can only be transitioned once. Simultaneous clicks or network retries receive `409 Already Processed`.
-
-2. **Atomic Balance Updates**:
-   `LeaveBalance.updateOne({ employee, leaveType, policyYear, pendingDays: { $gte: days } }, { $inc: { usedDays: days, pendingDays: -days } })`
-   Prevents double balance deduction and race condition balance exhaustion.
+*Leave Management System — Exelon Circuits Pvt. Ltd.*

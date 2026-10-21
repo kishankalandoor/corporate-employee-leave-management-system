@@ -21,29 +21,29 @@ npm --prefix backend test
 ```
 **Results Verified**:
 ```
-✓ tests/working-days.test.ts (13 tests)
-   ✓ toDateOnly > should parse ISO date string
-   ✓ isWeekend > should identify Saturday as weekend
-   ✓ isWeekend > should identify Sunday as weekend
-   ✓ isWeekend > should identify Monday as weekday
-   ✓ calculateWorkingDays > should count 5 working days for Mon-Fri
-   ✓ calculateWorkingDays > should count 0 days for weekend
-   ✓ calculateWorkingDays > should count 1 day for a single weekday
-   ✓ calculateWorkingDays > should return 0.5 for a half day
-   ✓ calculateWorkingDays > should return 0 for end before start
-   ✓ calculateWorkingDays > should skip weekends in multi-week range
-   ✓ dateRangesOverlap > should detect overlapping ranges
-   ✓ dateRangesOverlap > should detect non-overlapping ranges
-   ✓ dateRangesOverlap > should detect adjacent ranges as overlapping
+[PASS] tests/working-days.test.ts (13 tests)
+   PASS toDateOnly > should parse ISO date string
+   PASS isWeekend > should identify Saturday as weekend
+   PASS isWeekend > should identify Sunday as weekend
+   PASS isWeekend > should identify Monday as weekday
+   PASS calculateWorkingDays > should count 5 working days for Mon-Fri
+   PASS calculateWorkingDays > should count 0 days for weekend
+   PASS calculateWorkingDays > should count 1 day for a single weekday
+   PASS calculateWorkingDays > should return 0.5 for a half day
+   PASS calculateWorkingDays > should return 0 for end before start
+   PASS calculateWorkingDays > should skip weekends in multi-week range
+   PASS dateRangesOverlap > should detect overlapping ranges
+   PASS dateRangesOverlap > should detect non-overlapping ranges
+   PASS dateRangesOverlap > should detect adjacent ranges as overlapping
 
-✓ tests/leave-balance.test.ts (7 tests)
-   ✓ reservePendingDays > should successfully reserve days when sufficient balance exists
-   ✓ reservePendingDays > should reject reservation when balance is insufficient
-   ✓ reservePendingDays > should return error when balance record not found
-   ✓ consumeApprovedDays > should deduct pendingDays and add to usedDays atomically
-   ✓ releasePendingDays > should decrement pendingDays when request is rejected or cancelled
-   ✓ restoreApprovedDays > should decrement usedDays when approved leave is cancelled by admin
-   ✓ applyManualAdjustment > should adjust balance days
+[PASS] tests/leave-balance.test.ts (7 tests)
+   PASS reservePendingDays > should successfully reserve days when sufficient balance exists
+   PASS reservePendingDays > should reject reservation when balance is insufficient
+   PASS reservePendingDays > should return error when balance record not found
+   PASS consumeApprovedDays > should deduct pendingDays and add to usedDays atomically
+   PASS releasePendingDays > should decrement pendingDays when request is rejected or cancelled
+   PASS restoreApprovedDays > should decrement usedDays when approved leave is cancelled by admin
+   PASS applyManualAdjustment > should adjust balance days
 
 Test Files  2 passed (2)
 Tests       20 passed (20)
@@ -53,3 +53,30 @@ Tests       20 passed (20)
 - `npm --prefix backend run typecheck`: **0 errors**
 - `npm --prefix backend run build`: **Compiled successfully to dist/**
 - `npm --prefix frontend run build`: **Vite production bundle built successfully (dist/)**
+
+---
+
+### 3. Container Orchestration & Health Checks
+
+All 8 containers pass automated Docker daemon health checks, verifying service readiness across all dependencies:
+
+```bash
+docker ps
+```
+
+![Docker Container Health Verification](images/docker/docker-services-healthy.png)
+
+---
+
+### 4. Runtime Performance & Error Verification
+
+#### 4.1 Process Stability & V8 Memory Footprint
+Node.js runtime heap memory remains stable around 28 MiB with zero memory leaks, continuous event loop throughput, and nominal CPU consumption:
+
+![Backend Runtime Stability](images/grafana/grafana-backend-runtime.png)
+
+#### 4.2 Zero-Error Application Logs
+Structured log telemetry via Grafana Loki confirms zero uncaught exceptions, zero 500 errors, and seamless JSON access log ingestion:
+
+![Zero-Error Logs & Diagnostics Stream](images/grafana/grafana-logs-diagnostics.png)
+

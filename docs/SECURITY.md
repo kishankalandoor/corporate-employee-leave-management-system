@@ -11,17 +11,27 @@
 - **HTTP-Only Cookies**: `lms_session` cookie configured with `httpOnly: true`, `sameSite: 'lax'`, preventing XSS cookie theft.
 - **Rate Limiting**: `express-rate-limit` throttles login attempts (50 attempts per 15 minutes per IP) to mitigate brute-force attacks.
 
+![Secure Authentication Portal](images/ui/ui-login.png)
+
 #### 1.2 Authorization & Access Control (RBAC)
 - **Multi-Layer Enforcement**: Backend route middlewares (`requireAuth`, `requireManagerOrAdmin`, `requireAdmin`) strictly guard endpoints. Hiding buttons in the frontend is purely ergonomic; backend re-validates permissions on every request.
 - **Team Isolation**: Managers can only inspect and approve leave requests belonging to direct reportees within their department. Self-approval is explicitly prohibited in code and returns `403 Forbidden`.
 - **Employee Privacy**: Employees cannot query other staff members' balances or historical applications by altering path parameters.
 
-#### 1.3 Injection Protections
+#### 1.3 Audit Trail & Non-Repudiation
+Every authentication attempt, privilege escalation, leave status modification, and administrative manual balance adjustment is written to an immutable `audit_logs` collection with actor metadata, client IP address, and timestamp:
+
+![Immutable System Audit Trail](images/ui/ui-audit-trail.png)
+
+#### 1.4 Injection Protections
 - **NoSQL Injection**: `express-mongo-sanitize` strips out `$` and `.` operators from client query parameters and request bodies.
 - **Spreadsheet Formula Injection (CSV)**: Exported spreadsheet cells starting with `=`, `+`, `-`, `@`, `\t`, or `\r` are prefixed with a single apostrophe (`'`) to prevent Remote Code Execution (RCE) in Microsoft Excel / LibreOffice.
 - **Cross-Site Scripting (XSS)**: Helmet HTTP security headers configure `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, and strict referrer policy.
 
-#### 1.4 Least Privilege Containerization
+#### 1.5 Least Privilege Containerization & Perimeter Ingress
 - **Non-Root Execution**: Backend container runs as a dedicated system user `nodejs:nodejs`.
 - **Internal Network Isolation**: MongoDB and monitoring components (Loki, Alloy) communicate across Docker's internal bridge network (`lms_network`) without publishing exposed ports to host interfaces.
-- **Proxy Ingress**: Nginx serves as the sole perimeter ingress on port 80.
+- **Proxy Ingress**: Nginx serves as the sole perimeter ingress on port 80, shielding internal APIs and terminating unauthorized public access to Prometheus `/metrics`.
+
+![Infrastructure & Nginx Ingress Proxy Security State](images/grafana/grafana-infrastructure.png)
+
