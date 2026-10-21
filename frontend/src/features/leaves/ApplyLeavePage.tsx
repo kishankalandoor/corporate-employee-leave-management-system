@@ -89,6 +89,7 @@ export const ApplyLeavePage: React.FC = () => {
   const applyMutation = useMutation({
     mutationFn: async (values: ApplyLeaveFormValues) => {
       const payload = {
+        leaveType: values.leaveTypeId,
         leaveTypeId: values.leaveTypeId,
         startDate: values.startDate,
         endDate: values.isHalfDay ? values.startDate : values.endDate,

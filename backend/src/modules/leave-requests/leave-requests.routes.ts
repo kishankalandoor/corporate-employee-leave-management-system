@@ -15,14 +15,20 @@ import { leaveRequestsTotal } from '../../observability/metrics.js';
 
 const router = Router();
 
-const applyLeaveSchema = z.object({
-  leaveType: z.string().refine((v) => Types.ObjectId.isValid(v), 'Invalid leave type ID'),
-  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be YYYY-MM-DD format'),
-  endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be YYYY-MM-DD format'),
-  isHalfDay: z.boolean().default(false),
-  halfDayType: z.enum(['first-half', 'second-half']).optional(),
-  reason: z.string().min(10, 'Reason must be at least 10 characters').max(1000),
-});
+const applyLeaveSchema = z
+  .object({
+    leaveType: z.string().optional(),
+    leaveTypeId: z.string().optional(),
+    startDate: z.string().min(1, 'Start date is required'),
+    endDate: z.string().min(1, 'End date is required'),
+    isHalfDay: z.boolean().default(false),
+    halfDayType: z.enum(['first-half', 'second-half']).optional(),
+    reason: z.string().min(3, 'Reason must be at least 3 characters').max(1000),
+  })
+  .refine((data) => !!(data.leaveType || data.leaveTypeId), {
+    message: 'Leave type is required',
+    path: ['leaveTypeId'],
+  });
 
 const leaveQuerySchema = z.object({
   page: z.coerce.number().min(1).default(1),
@@ -89,7 +95,8 @@ router.post('/', requireAuth, async (req: AuthenticatedRequest, res: Response, n
     const parsed = applyLeaveSchema.safeParse(req.body);
     if (!parsed.success) throw new AppError(422, 'Validation failed', 'VALIDATION_ERROR', parsed.error.flatten());
 
-    const { leaveType: leaveTypeId, startDate: startStr, endDate: endStr, isHalfDay, halfDayType, reason } = parsed.data;
+    const leaveTypeId = parsed.data.leaveTypeId || parsed.data.leaveType;
+    const { startDate: startStr, endDate: endStr, isHalfDay, halfDayType, reason } = parsed.data;
 
     const startDate = toDateOnly(startStr);
     const endDate = toDateOnly(endStr);
