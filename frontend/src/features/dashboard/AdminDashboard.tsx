@@ -104,6 +104,16 @@ export const AdminDashboard: React.FC = () => {
             <i className="bi bi-file-earmark-spreadsheet" aria-hidden="true" />
             <span>Generate Report</span>
           </Link>
+          <a
+            href="/grafana/"
+            target="_blank"
+            rel="noreferrer"
+            className="btn btn-outline-warning text-dark fw-medium btn-sm d-inline-flex align-items-center gap-1 shadow-sm"
+          >
+            <i className="bi bi-speedometer2 text-warning" aria-hidden="true" />
+            <span>Grafana Metrics</span>
+            <i className="bi bi-box-arrow-up-right small text-muted" style={{ fontSize: '10px' }} />
+          </a>
         </div>
       </div>
 

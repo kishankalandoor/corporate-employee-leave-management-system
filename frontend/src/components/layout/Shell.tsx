@@ -258,6 +258,22 @@ export const Shell: React.FC = () => {
                 <i className="bi bi-shield-check fs-5" aria-hidden="true" />
                 {!sidebarCollapsed && <span>Audit Trail</span>}
               </NavLink>
+
+              <a
+                href="/grafana/"
+                target="_blank"
+                rel="noreferrer"
+                className="nav-link d-flex align-items-center gap-3 text-warning rounded-2 py-2 px-3 hover-bg-dark-light"
+                title="Grafana Observability & Metrics"
+              >
+                <i className="bi bi-speedometer2 fs-5 text-warning" aria-hidden="true" />
+                {!sidebarCollapsed && (
+                  <span className="d-flex align-items-center justify-content-between w-100">
+                    <span>Grafana Metrics</span>
+                    <i className="bi bi-box-arrow-up-right small text-warning opacity-75" style={{ fontSize: '11px' }} />
+                  </span>
+                )}
+              </a>
             </>
           )}
         </nav>
