@@ -8,6 +8,23 @@ async function bootstrap() {
 
   const app = createApp();
 
+  // Sync DB metrics for Prometheus
+  const syncDatabaseMetrics = async () => {
+    try {
+      const { User } = await import('./modules/users/user.model.js');
+      const { LeaveRequest } = await import('./modules/leave-requests/leave-request.model.js');
+      const { activeUsersGauge, pendingApprovalsGauge } = await import('./observability/metrics.js');
+      const activeUsers = await User.countDocuments({ status: 'active' });
+      activeUsersGauge.set(activeUsers);
+      const pendingCount = await LeaveRequest.countDocuments({ status: 'pending' });
+      pendingApprovalsGauge.set(pendingCount);
+    } catch (err) {
+      logger.warn({ err }, 'Failed to sync database metrics');
+    }
+  };
+  await syncDatabaseMetrics();
+  setInterval(() => { void syncDatabaseMetrics(); }, 30000);
+
   const server = app.listen(env.APP_PORT, () => {
     logger.info(
       { port: env.APP_PORT, env: env.NODE_ENV },

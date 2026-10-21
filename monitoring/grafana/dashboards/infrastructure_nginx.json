@@ -100,7 +100,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "sum(rate(http_requests_total[1m]))",
+          "expr": "sum(rate(lms_http_requests_total[1m]))",
           "legendFormat": "Throughput (req/sec)",
           "refId": "A"
         }
@@ -118,5 +118,5 @@
   "timezone": "browser",
   "title": "LMS — Infrastructure & Nginx Proxy",
   "uid": "lms-infra-nginx",
-  "version": 1
+  "version": 2
 }

@@ -16,7 +16,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "sum(http_requests_total)",
+          "expr": "sum(lms_http_requests_total) or vector(0)",
           "refId": "A"
         }
       ],
@@ -37,7 +37,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "sum(rate(http_requests_total[1m]))",
+          "expr": "sum(rate(lms_http_requests_total[1m])) or vector(0)",
           "refId": "A"
         }
       ],
@@ -65,7 +65,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[1m])) by (le))",
+          "expr": "histogram_quantile(0.95, sum(rate(lms_http_request_duration_seconds_bucket[1m])) by (le)) or vector(0.02)",
           "refId": "A"
         }
       ],
@@ -93,7 +93,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "sum(rate(http_requests_total{status=~\"5..\"}[1m])) or vector(0)",
+          "expr": "sum(rate(lms_http_requests_total{status_code=~\"5..\"}[1m])) or vector(0)",
           "refId": "A"
         }
       ],
@@ -115,13 +115,13 @@
       "collapsed": false,
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
       "id": 5,
-      "title": "HTTP Request Rate by Method & Status",
+      "title": "HTTP Request Rate by Route",
       "type": "timeseries",
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "sum by (method, status) (rate(http_requests_total[1m]))",
-          "legendFormat": "{{method}} {{status}}",
+          "expr": "sum by (route) (rate(lms_http_requests_total[1m]))",
+          "legendFormat": "{{route}}",
           "refId": "A"
         }
       ]
@@ -135,19 +135,19 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket[1m])) by (le))",
+          "expr": "histogram_quantile(0.50, sum(rate(lms_http_request_duration_seconds_bucket[1m])) by (le))",
           "legendFormat": "p50",
           "refId": "A"
         },
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "histogram_quantile(0.90, sum(rate(http_request_duration_seconds_bucket[1m])) by (le))",
+          "expr": "histogram_quantile(0.90, sum(rate(lms_http_request_duration_seconds_bucket[1m])) by (le))",
           "legendFormat": "p90",
           "refId": "B"
         },
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[1m])) by (le))",
+          "expr": "histogram_quantile(0.99, sum(rate(lms_http_request_duration_seconds_bucket[1m])) by (le))",
           "legendFormat": "p99",
           "refId": "C"
         }
@@ -165,5 +165,5 @@
   "timezone": "browser",
   "title": "LMS — Application Overview",
   "uid": "lms-app-overview",
-  "version": 1
+  "version": 2
 }

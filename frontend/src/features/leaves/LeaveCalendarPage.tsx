@@ -21,7 +21,7 @@ export const LeaveCalendarPage: React.FC = () => {
       // Fetch upcoming leaves and holidays
       const [leavesRes, holidaysRes] = await Promise.all([
         api.get<{ success: boolean; data: any[] }>('/leaves?status=approved'),
-        api.get<{ success: boolean; data: any[] }>('/leaves/holidays').catch(() => ({ data: { data: [] } })),
+        api.get<{ success: boolean; data: any[] }>('/holidays').catch(() => ({ data: { data: [] } })),
       ]);
 
       const leaveEvents: CalendarEvent[] = (leavesRes.data.data || []).map((l: any) => ({

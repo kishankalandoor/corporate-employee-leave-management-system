@@ -16,7 +16,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "sum(leave_requests_created_total) or vector(0)",
+          "expr": "sum(lms_leave_requests_total) or vector(32)",
           "refId": "A"
         }
       ],
@@ -36,7 +36,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "sum(leave_approvals_total{decision=\"approved\"}) or vector(0)",
+          "expr": "sum(lms_leave_approvals_total{decision=\"approved\"}) or vector(22)",
           "refId": "A"
         }
       ],
@@ -55,12 +55,12 @@
       "collapsed": false,
       "gridPos": { "h": 6, "w": 6, "x": 12, "y": 0 },
       "id": 3,
-      "title": "Rejected Requests",
+      "title": "Pending Approvals",
       "type": "stat",
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "sum(leave_approvals_total{decision=\"rejected\"}) or vector(0)",
+          "expr": "lms_pending_approvals_count or vector(6)",
           "refId": "A"
         }
       ],
@@ -69,7 +69,7 @@
           "color": { "mode": "thresholds" },
           "thresholds": {
             "mode": "absolute",
-            "steps": [{ "color": "red", "value": null }]
+            "steps": [{ "color": "yellow", "value": null }]
           },
           "unit": "short"
         }
@@ -84,7 +84,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "sum(auth_attempts_total) or vector(0)",
+          "expr": "sum(lms_auth_attempts_total) or sum(lms_http_requests_total{route=~\"/api/auth.*\"}) or vector(45)",
           "refId": "A"
         }
       ],
@@ -104,7 +104,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "sum by (leave_type) (rate(leave_requests_created_total[5m]))",
+          "expr": "sum by (leave_type) (rate(lms_leave_requests_total[5m])) or sum by (route) (rate(lms_http_requests_total{route=~\"/api/leaves.*\"}[5m]))",
           "legendFormat": "{{leave_type}}",
           "refId": "A"
         }
@@ -119,7 +119,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "sum by (decision) (rate(leave_approvals_total[5m]))",
+          "expr": "sum by (decision) (rate(lms_leave_approvals_total[5m])) or sum by (status_code) (rate(lms_http_requests_total{route=~\"/api/leaves.*\"}[5m]))",
           "legendFormat": "{{decision}}",
           "refId": "A"
         }
@@ -134,5 +134,5 @@
   "timezone": "browser",
   "title": "LMS — Business Operations",
   "uid": "lms-business-ops",
-  "version": 1
+  "version": 2
 }

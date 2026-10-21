@@ -16,7 +16,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "process_uptime_seconds{job=\"lms-backend\"}",
+          "expr": "time() - lms_process_start_time_seconds{job=\"lms-backend\"}",
           "refId": "A"
         }
       ],
@@ -36,7 +36,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "process_resident_memory_bytes{job=\"lms-backend\"}",
+          "expr": "lms_process_resident_memory_bytes{job=\"lms-backend\"}",
           "refId": "A"
         }
       ],
@@ -56,7 +56,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "nodejs_heap_size_used_bytes{job=\"lms-backend\"}",
+          "expr": "lms_nodejs_heap_size_used_bytes{job=\"lms-backend\"}",
           "refId": "A"
         }
       ],
@@ -76,7 +76,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "nodejs_active_handles_total{job=\"lms-backend\"}",
+          "expr": "lms_nodejs_active_handles_total{job=\"lms-backend\"} or lms_nodejs_active_handles{job=\"lms-backend\"}",
           "refId": "A"
         }
       ],
@@ -96,19 +96,19 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "nodejs_heap_size_total_bytes{job=\"lms-backend\"}",
+          "expr": "lms_nodejs_heap_size_total_bytes{job=\"lms-backend\"}",
           "legendFormat": "Heap Total",
           "refId": "A"
         },
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "nodejs_heap_size_used_bytes{job=\"lms-backend\"}",
+          "expr": "lms_nodejs_heap_size_used_bytes{job=\"lms-backend\"}",
           "legendFormat": "Heap Used",
           "refId": "B"
         },
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "process_resident_memory_bytes{job=\"lms-backend\"}",
+          "expr": "lms_process_resident_memory_bytes{job=\"lms-backend\"}",
           "legendFormat": "RSS",
           "refId": "C"
         }
@@ -126,13 +126,13 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "rate(process_cpu_user_seconds_total{job=\"lms-backend\"}[1m])",
+          "expr": "rate(lms_process_cpu_user_seconds_total{job=\"lms-backend\"}[1m])",
           "legendFormat": "CPU User",
           "refId": "A"
         },
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "rate(process_cpu_system_seconds_total{job=\"lms-backend\"}[1m])",
+          "expr": "rate(lms_process_cpu_system_seconds_total{job=\"lms-backend\"}[1m])",
           "legendFormat": "CPU System",
           "refId": "B"
         }
@@ -150,5 +150,5 @@
   "timezone": "browser",
   "title": "LMS — Backend Runtime & Node.js",
   "uid": "lms-backend-runtime",
-  "version": 1
+  "version": 2
 }
