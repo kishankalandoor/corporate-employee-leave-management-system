@@ -1,0 +1,53 @@
+name: leave-management-system-dev
+
+services:
+  mongodb:
+    image: mongo:7.0-jammy
+    container_name: lms-mongodb-dev
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data_dev:/data/db
+    networks:
+      - lms_dev_network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: lms-backend-dev
+    command: npm run dev
+    ports:
+      - "4000:4000"
+    environment:
+      NODE_ENV: development
+      PORT: 4000
+      MONGODB_URI: mongodb://mongodb:27017/leave_management
+      SESSION_SECRET: dev-secret-key-32-chars-long-at-least
+      SESSION_COOKIE_NAME: lms_session
+      SEED_DEMO_DATA: "true"
+    volumes:
+      - ./backend/src:/app/src
+    depends_on:
+      - mongodb
+    networks:
+      - lms_dev_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: lms-frontend-dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/src:/app/src
+    networks:
+      - lms_dev_network
+
+volumes:
+  mongodb_data_dev:
+
+networks:
+  lms_dev_network:
+    driver: bridge
