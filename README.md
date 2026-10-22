@@ -47,7 +47,7 @@
 
 ## 1. Executive Summary
 
-The **Leave Management System (LMS)** is an enterprise human resource solution engineered for **Exelon Circuits Pvt. Ltd.** The platform orchestrates the complete leave lifecycle across multi-tiered corporate structures, enforcing atomic balance reservations, automated working-day calculations, holiday schedules, role-based access control (RBAC), and compliance auditing.
+The **Leave Management System (LMS)** is an enterprise human resource solution  The platform orchestrates the complete leave lifecycle across multi-tiered corporate structures, enforcing atomic balance reservations, automated working-day calculations, holiday schedules, role-based access control (RBAC), and compliance auditing.
 
 The system is deployed via Docker Compose with an integrated Nginx ingress reverse proxy, MongoDB 7 database cluster, and a full Grafana/Prometheus/Loki observability stack.
 
