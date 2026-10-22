@@ -1,7 +1,6 @@
 # Leave Management System (LMS)
 
-### Enterprise HR SaaS Platform — Exelon Circuits Pvt. Ltd.
-
+### Enterprise HR SaaS Platform 
 [![Docker Compose](https://img.shields.io/badge/Docker%20Compose-v2.29+-blue.svg)](https://docs.docker.com/compose/)
 [![React](https://img.shields.io/badge/React-18-61dafb.svg)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178c6.svg)](https://www.typescriptlang.org/)
