@@ -330,4 +330,4 @@ For in-depth architectural specifications and operational runbooks, refer to:
 
 ---
 
-*Leave Management System — Exelon Circuits Pvt. Ltd. Enterprise Portal. Engineered by Kishan Kalandoor.*
+*Leave Management System —  Enterprise Portal. Engineered by Kishan Kalandoor.*
